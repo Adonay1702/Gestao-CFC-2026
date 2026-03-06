@@ -29,32 +29,32 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
 
-        /* COLUNA DE NOMES FIXA (LEFT) */
+        /* Coluna de nomes fixa e opaca no mobile */
         .sticky-column {
             position: sticky;
             left: 0;
-            z-index: 20;
-            background-color: white !important;
+            z-index: 30;
+            background-color: inherit; /* Herda a cor da linha para não ficar transparente */
             border-right: 2px solid #10b981;
             box-shadow: 4px 0 10px -5px rgba(0,0,0,0.15);
             min-width: 140px;
         }
 
-        /* CABEÇALHO DE MESES FIXO (TOP) */
+        /* Cabeçalho dos meses fixo no topo */
         .sticky-header {
             position: sticky;
             top: 0;
-            z-index: 40;
-            background-color: #f1f5f9 !important;
+            z-index: 20;
+            background-color: #f8fafc !important;
         }
 
-        /* O CRUZAMENTO (Canto superior esquerdo) PRECISA DE Z-INDEX MAIOR */
+        /* O canto (Membro) fica fixo no topo e na esquerda */
         .sticky-corner {
             position: sticky;
             top: 0;
             left: 0;
-            z-index: 50;
-            background-color: #f1f5f9 !important;
+            z-index: 40;
+            background-color: #f8fafc !important;
             border-right: 2px solid #10b981;
         }
 
@@ -90,54 +90,6 @@
         const monthLabels = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
         const appId = 'cfc-painel-2026-v1';
 
-        const initialMembers = [
-            { id: 1, nome: "ADONAY", jan: 0, fev: 30, mar: 50, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 2, nome: "ALUXAN", jan: 0, fev: 30, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 3, nome: "BRENO", jan: 0, fev: 30, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 4, nome: "BRUNO TOSTA", jan: 0, fev: 30, mar: 30, abr: 10, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 5, nome: "CJ", jan: 0, fev: 30, mar: 50, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 6, nome: "DAN", jan: 0, fev: 30, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 7, nome: "FELIPE", jan: 0, fev: 30, mar: 50, abr: 50, mai: 10, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 8, nome: "FERNANDINHO", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 9, nome: "FOLLY", jan: 0, fev: 30, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 10, nome: "FOLLY (DEZ. 2025)", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 30 },
-            { id: 11, nome: "GRILO", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 12, nome: "HEVERTON", jan: 0, fev: 30, mar: 30, abr: 30, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 13, nome: "HUGO", jan: 0, fev: 30, mar: 20, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 14, nome: "KADU", jan: 0, fev: 30, mar: 30, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 15, nome: "KAIQUE", jan: 0, fev: 30, mar: 50, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 16, nome: "KELVIN", jan: 0, fev: 30, mar: 50, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 17, nome: "LUAN MURY", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 18, nome: "LUCAS BRIAN", jan: 0, fev: 0, mar: 50, abr: 50, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 19, nome: "LUCAS MURY", jan: 0, fev: 30, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 20, nome: "MATA GALO", jan: 0, fev: 30, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 21, nome: "PABLO", jan: 0, fev: 30, mar: 50, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 22, nome: "PEDRO PIRES", jan: 0, fev: 30, mar: 20, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 23, nome: "PH", jan: 0, fev: 30, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 24, nome: "RAFAEL TWO", jan: 0, fev: 30, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 25, nome: "RAMON", jan: 0, fev: 0, mar: 50, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 26, nome: "RENAN ANTUNES", jan: 0, fev: 30, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 27, nome: "RONALDINHO", jan: 0, fev: 30, mar: 30, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 28, nome: "RUAN", jan: 0, fev: 30, mar: 50, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 29, nome: "THOMAS BRYAN", jan: 0, fev: 30, mar: 30, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 30, nome: "UIL", jan: 0, fev: 30, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 31, nome: "WANDER", jan: 0, fev: 30, mar: 50, abr: 30, mai: 30, jun: 30, jul: 30, ago: 30, set: 30, out: 30, nov: 10, dez: 0 },
-            { id: 32, nome: "WELLERSON", jan: 0, fev: 0, mar: 0, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 33, nome: "zDIEGO (BRUNA)", jan: 0, fev: 0, mar: 30, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 34, nome: "zKAREN (FELIPE)", jan: 0, fev: 0, mar: 20, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 35, nome: "zMATHIAS", jan: 0, fev: 0, mar: 30, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-            { id: 36, nome: "zWASHINGTON", jan: 0, fev: 0, mar: 50, abr: 0, mai: 0, jun: 0, jul: 0, ago: 0, set: 0, out: 0, nov: 0, dez: 0 },
-        ];
-
-        const initialExpenses = [
-            { id: 1, desc: "(Heverton) final do ano 2025.", valor: 90 },
-            { id: 2, desc: "Pag. juiz jogo 22/02/26", valor: 80 },
-            { id: 3, desc: "Compra da bola (Wander)", valor: 250 },
-            { id: 4, desc: "Pag. juiz jogo dia 01/03/26", valor: 80 },
-            { id: 5, desc: "Gastos p/ levar Bruno a Teresópolis (médico)", valor: 100 },
-            { id: 6, desc: "Pagamento da lavagem de roupas (fevereiro)", valor: 250 },
-        ];
-
         function App({ fbAuth, fbDb }) {
             const [user, setUser] = useState(null);
             const [isAdmin, setIsAdmin] = useState(false);
@@ -152,38 +104,41 @@
             useEffect(() => {
                 if (!fbAuth) { setLoading(false); return; }
                 fbAuth.signInAnonymously().catch(() => setLoading(false));
-                return fbAuth.onAuthStateChanged(u => { setUser(u); if(!u) setLoading(false); });
+                return fbAuth.onAuthStateChanged(u => {
+                    setUser(u);
+                    if(!u) setLoading(false);
+                });
             }, [fbAuth]);
 
             useEffect(() => {
                 if (!user || !fbDb) return;
                 const mRef = fbDb.collection('artifacts').doc(appId).collection('public').doc('data').collection('members');
                 const eRef = fbDb.collection('artifacts').doc(appId).collection('public').doc('data').collection('expenses');
+
                 const unsubM = mRef.onSnapshot(snap => {
-                    if (!snap.empty) { let d = []; snap.forEach(x => d.push(x.data())); setMembers(d); setIsSyncing(true); }
+                    if (!snap.empty) {
+                        let data = [];
+                        snap.forEach(d => data.push(d.data()));
+                        setMembers(data);
+                        setIsSyncing(true);
+                    }
                     setLoading(false);
                 }, () => setLoading(false));
+
                 const unsubE = eRef.onSnapshot(snap => {
-                    if (!snap.empty) { let d = []; snap.forEach(x => d.push(x.data())); setExpenses(d); }
+                    if (!snap.empty) {
+                        let data = [];
+                        snap.forEach(d => data.push(d.data()));
+                        setExpenses(data);
+                    }
                 });
                 return () => { unsubM(); unsubE(); };
             }, [user, fbDb]);
 
-            const populateDb = async () => {
-                if (!fbDb || !isSyncing) return;
-                setLoading(true);
-                for (const m of initialMembers) await fbDb.collection('artifacts').doc(appId).collection('public').doc('data').collection('members').doc(m.id.toString()).set(m);
-                for (const e of initialExpenses) await fbDb.collection('artifacts').doc(appId).collection('public').doc('data').collection('expenses').doc(e.id.toString()).set(e);
-                setLoading(false);
-                alert("Dados carregados!");
-            };
-
-            const getRowTotal = (m) => months.reduce((s, mon) => s + (Number(m[mon]) || 0), 0);
-
-            const updateMember = async (id, f, v) => {
+            const updateMember = async (id, field, val) => {
                 const m = members.find(x => x.id === id);
                 if (!m) return;
-                const up = { ...m, [f]: v };
+                const up = { ...m, [field]: val };
                 setMembers(prev => prev.map(x => x.id === id ? up : x));
                 if (fbDb && isSyncing) await fbDb.collection('artifacts').doc(appId).collection('public').doc('data').collection('members').doc(id.toString()).set(up);
             };
@@ -196,22 +151,22 @@
             };
 
             const delMember = async (id) => {
-                if (!confirm("Excluir definitivamente?")) return;
+                if (!confirm("Excluir permanentemente?")) return;
                 setMembers(members.filter(x => x.id !== id));
                 if (fbDb && isSyncing) await fbDb.collection('artifacts').doc(appId).collection('public').doc('data').collection('members').doc(id.toString()).delete();
             };
 
-            const updateExp = async (id, f, v) => {
+            const updateExp = async (id, field, val) => {
                 const ex = expenses.find(x => x.id === id);
                 if (!ex) return;
-                const up = { ...ex, [f]: v };
+                const up = { ...ex, [field]: val };
                 setExpenses(expenses.map(x => x.id === id ? up : x));
                 if (fbDb && isSyncing) await fbDb.collection('artifacts').doc(appId).collection('public').doc('data').collection('expenses').doc(id.toString()).set(up);
             };
 
             const addExp = async () => {
                 const nid = Date.now();
-                const ne = { id: nid, desc: "Novo Gasto", valor: 0 };
+                const ne = { id: nid, desc: "Nova Saída", valor: 0 };
                 setExpenses([...expenses, ne]);
                 if (fbDb && isSyncing) await fbDb.collection('artifacts').doc(appId).collection('public').doc('data').collection('expenses').doc(nid.toString()).set(ne);
             };
@@ -222,21 +177,44 @@
                 if (fbDb && isSyncing) await fbDb.collection('artifacts').doc(appId).collection('public').doc('data').collection('expenses').doc(id.toString()).delete();
             };
 
+            const getRowTotal = (member) => months.reduce((sum, month) => sum + (Number(member[month]) || 0), 0);
+
             const stats = useMemo(() => {
-                let tin = 0, count = 0;
-                members.forEach(m => { tin += getRowTotal(m); if (m.nome && !m.nome.startsWith('z')) count++; });
-                let tout = expenses.reduce((acc, curr) => acc + (Number(curr.valor) || 0), 0);
-                return { in: tin, out: tout, count };
+                let tin = 0, count = 0, colabs = 0;
+                members.forEach(m => {
+                    tin += getRowTotal(m);
+                    if (m.nome && !m.nome.toLowerCase().startsWith('z')) {
+                        count++;
+                    } else if (m.nome && m.nome.toLowerCase().startsWith('z')) {
+                        colabs++;
+                    }
+                });
+                
+                let tout = 0;
+                let maiorEx = 0;
+                expenses.forEach(curr => {
+                    const val = Number(curr.valor) || 0;
+                    tout += val;
+                    if (val > maiorEx) maiorEx = val;
+                });
+                
+                return { in: tin, out: tout, count, colabs, maiorEx };
             }, [members, expenses]);
 
             const sortedMembers = useMemo(() => [...members].sort((a,b) => (a.nome||"").localeCompare(b.nome||"", 'pt-BR')), [members]);
-            const sortedExpenses = useMemo(() => [...expenses].sort((a,b) => b.id - a.id), [expenses]);
+            const sortedExpenses = useMemo(() => [...expenses].sort((a, b) => b.id - a.id), [expenses]);
             const fmt = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
             const handleLogin = (e) => {
                 e.preventDefault();
-                if (pass === "Mmaggott#7") { setIsAdmin(true); setShowModal(false); setPass(""); setErr(""); }
-                else setErr("Chave incorreta.");
+                if (pass === "Mmaggott#7") {
+                    setIsAdmin(true);
+                    setShowModal(false);
+                    setPass("");
+                    setErr("");
+                } else {
+                    setErr("Chave incorreta.");
+                }
             };
 
             if (loading && members.length === 0) return (
@@ -248,8 +226,7 @@
 
             return (
                 <div className="flex flex-col min-h-screen">
-                    {/* Header */}
-                    <header className="bg-emerald-700 text-white p-3 md:p-4 shadow-lg sticky top-0 z-[60]">
+                    <header className="bg-emerald-700 text-white p-3 md:p-4 shadow-lg sticky top-0 z-50">
                         <div className="max-w-7xl mx-auto flex justify-between items-center">
                             <div className="flex items-center space-x-2">
                                 <img src="cfc.png" alt="CFC" className="h-10 w-10 md:h-16 md:w-16 rounded-full bg-white p-0.5 shadow-md object-contain" onError={e => e.target.src="https://ui-avatars.com/api/?name=CFC&background=059669&color=fff"} />
@@ -261,17 +238,14 @@
                                     </div>
                                 </div>
                             </div>
-                            <button onClick={() => isAdmin ? setIsAdmin(false) : setShowModal(true)} className="bg-emerald-800 p-2 md:px-4 md:py-2 rounded-xl border border-emerald-600 shadow active:scale-95 transition-all">
+                            <button onClick={() => isAdmin ? setIsAdmin(false) : setShowModal(true)} className="bg-emerald-800 p-2 md:px-4 md:py-2 rounded-xl border border-emerald-600 shadow active:scale-95">
                                 {isAdmin ? <span className="text-[10px] font-black px-1 text-emerald-300">SAIR</span> : <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00-2 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>}
                             </button>
                         </div>
                     </header>
 
                     <main className="max-w-7xl mx-auto px-2 md:px-4 mt-4 space-y-4 w-full flex-grow">
-                        {isAdmin && members.length === 0 && (
-                            <button onClick={populateDb} className="w-full bg-blue-600 text-white p-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg">🚀 Carregar Dados Iniciais</button>
-                        )}
-
+                        
                         {/* Cards Resumo Carousel */}
                         <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-3 pb-2 snap-x-container no-scrollbar">
                             <div className="min-w-[85%] md:min-w-0 bg-white p-5 rounded-[2rem] shadow-sm border border-slate-200 snap-card">
@@ -287,80 +261,87 @@
                                 <p className="text-3xl font-black text-red-500 tracking-tighter text-center md:text-left">{fmt(stats.out)}</p>
                             </div>
                         </div>
+                        <div className="md:hidden flex justify-center space-x-1 -mt-2">
+                             <div className="w-1 h-1 bg-emerald-600 rounded-full"></div>
+                             <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
+                             <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
+                        </div>
 
-                        {/* Tabela Principal */}
-                        <div className="bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden">
+                        {/* Tabela de Mensalidades com GRADE (Linhas Verticais) */}
+                        <div className="bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden mt-4">
                             <div className="p-4 bg-slate-50 border-b flex justify-between items-center">
-                                <h2 className="font-black text-slate-800 uppercase text-[10px] tracking-widest">Mensalidades</h2>
+                                <h2 className="font-black text-slate-800 uppercase text-[10px] tracking-widest">Controle de Mensalidades</h2>
                                 {isAdmin && <button onClick={addMember} className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-black shadow shadow-emerald-200 active:scale-95">+ MEMBRO</button>}
                             </div>
                             
-                            <div className="overflow-x-auto max-h-[650px] relative scroll-smooth">
+                            <div className="overflow-x-auto max-h-[65vh] relative scroll-smooth">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="text-[10px] text-slate-400 font-black uppercase bg-slate-100">
+                                        <tr className="text-[10px] text-slate-500 font-black uppercase bg-slate-100">
                                             {/* O Cruzamento: Fixo no Topo e na Esquerda */}
-                                            <th className="sticky-corner p-4 border-b">MEMBRO</th>
-                                            {/* Cabeçalhos dos meses: Fixos no Topo */}
+                                            <th className="sticky-corner p-3 md:p-4 border-b border-r border-slate-200">MEMBRO</th>
+                                            {/* Cabeçalhos dos meses: Fixos no Topo com bordas verticais */}
                                             {monthLabels.map(m => (
-                                                <th key={m} className="sticky-header p-4 text-center border-b min-w-[65px] font-bold">{m}</th>
+                                                <th key={m} className="sticky-header p-3 md:p-4 text-center border-b border-r border-slate-200 min-w-[65px] font-bold">{m}</th>
                                             ))}
-                                            <th className="sticky-header p-4 text-right border-b font-black min-w-[100px] bg-slate-100">TOTAL</th>
-                                            {isAdmin && <th className="sticky-header p-4 border-b w-[60px]"></th>}
+                                            <th className="sticky-header p-3 md:p-4 text-right border-b border-slate-200 font-black min-w-[100px] bg-slate-100">TOTAL</th>
+                                            {isAdmin && <th className="sticky-header p-3 border-b border-slate-200 w-[60px]"></th>}
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-100">
+                                    <tbody className="divide-y divide-slate-200">
                                         {sortedMembers.map((m, idx) => {
-                                            const isZ = m.nome && m.nome.startsWith('z');
-                                            const name = isZ ? m.nome.substring(1) : m.nome;
-                                            const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50';
+                                            const isColab = m.nome && m.nome.startsWith('z');
+                                            const displayName = isColab ? m.nome.substring(1) : m.nome;
+                                            // Cor da linha inteira
+                                            const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-slate-50';
 
                                             return (
-                                                <tr key={m.id} className="text-[12px] md:text-sm">
+                                                <tr key={m.id} className={`text-[12px] md:text-sm ${rowBg} hover:bg-emerald-50 transition-colors`}>
                                                     {/* Coluna Membro: Fixa na Esquerda */}
-                                                    <td className={`sticky-column p-4 font-bold ${rowBg}`}>
+                                                    <td className={`sticky-column p-3 md:p-4 font-bold ${rowBg}`}>
                                                         {isAdmin ? <input type="text" value={m.nome} onChange={e => updateMember(m.id, 'nome', e.target.value.toUpperCase())} className="w-full bg-transparent border-none focus:ring-0 p-0 font-bold text-emerald-900 outline-none" /> : 
                                                         <div className="flex flex-col">
-                                                            <span className={isZ ? "text-slate-400 font-normal italic" : "font-bold text-gray-900"}>{name || '---'}</span>
-                                                            {isZ && <span className="text-[7px] text-emerald-500 font-black uppercase tracking-tighter">Colaborador</span>}
+                                                            <span className={isColab ? "text-slate-400 font-normal italic" : "font-bold text-slate-900"}>{displayName || '---'}</span>
+                                                            {isColab && <span className="text-[7px] text-emerald-500 font-black uppercase tracking-tighter text-left">Colaborador</span>}
                                                         </div>}
                                                     </td>
+                                                    {/* Células dos meses com bordas verticais (border-r) */}
                                                     {months.map(mon => {
                                                         const val = Number(m[mon]) || 0;
-                                                        const color = val === 50 ? 'bg-emerald-100 text-emerald-800' : val === 30 ? 'bg-yellow-100 text-yellow-800' : val > 0 ? 'bg-orange-100 text-orange-700' : 'text-slate-200';
+                                                        const color = val === 50 ? 'bg-emerald-100 text-emerald-700' : val === 30 ? 'bg-yellow-100 text-yellow-700' : val > 0 ? 'bg-orange-100 text-orange-700' : 'text-slate-300';
                                                         return (
-                                                            <td key={mon} className="p-2 text-center">
-                                                                {isAdmin ? <input type="number" value={val === 0 ? '' : val} onChange={e => updateMember(m.id, mon, Number(e.target.value))} className={`w-full p-2 rounded-xl text-center font-black text-xs ${val > 0 ? color : 'bg-gray-100'}`} placeholder="0" /> : 
+                                                            <td key={mon} className="p-2 text-center border-r border-slate-200">
+                                                                {isAdmin ? <input type="number" value={val === 0 ? '' : val} onChange={e => updateMember(m.id, mon, Number(e.target.value))} className={`w-full p-2 rounded-xl text-center font-black text-xs ${val > 0 ? color : 'bg-transparent'}`} placeholder="0" /> : 
                                                                 <span className={`inline-block px-2 py-1 rounded-lg font-black min-w-[32px] ${color}`}>{val > 0 ? val : '-'}</span>}
                                                             </td>
                                                         );
                                                     })}
-                                                    <td className={`p-4 text-right font-black text-slate-700 ${rowBg}`}>{getRowTotal(m).toLocaleString('pt-BR')}</td>
-                                                    {isAdmin && <td className={`p-2 text-center ${rowBg}`}><button onClick={()=>delMember(m.id)} className="text-red-400 font-bold text-lg">×</button></td>}
+                                                    <td className="p-3 md:p-4 text-right font-black text-slate-700 border-l border-slate-200">{fmt(getRowTotal(m)).replace('R$','')}</td>
+                                                    {isAdmin && <td className="p-2 text-center border-l border-slate-200"><button onClick={()=>delMember(m.id)} className="text-red-400 font-bold text-lg hover:text-red-600">×</button></td>}
                                                 </tr>
                                             );
                                         })}
                                     </tbody>
                                 </table>
                             </div>
-                            <div className="p-4 bg-emerald-50 text-[8px] font-black text-emerald-400 uppercase tracking-[.4em] text-center md:hidden border-t">Deslize lateral para ver os meses ⟷</div>
+                            <div className="p-4 bg-emerald-50 text-[8px] font-black text-emerald-500 uppercase tracking-[.4em] text-center md:hidden border-t border-slate-200">Deslize lateral para ver os meses ⟷</div>
                         </div>
 
-                        {/* Gastos e Stats */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-12">
+                        {/* Gastos Cronológicos e Stats */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-12 mt-4">
                             <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full">
                                 <div className="p-5 bg-gray-50 border-b flex justify-between items-center">
-                                    <h2 className="font-black text-slate-700 uppercase text-xs tracking-widest">Saídas Detalhadas</h2>
+                                    <h2 className="font-black text-slate-800 uppercase text-xs tracking-widest">Saídas Detalhadas</h2>
                                     {isAdmin && <button onClick={addExp} className="text-red-500 font-black text-[10px] uppercase tracking-widest">+ ADICIONAR</button>}
                                 </div>
-                                <div className="divide-y divide-slate-50 max-h-[350px] overflow-y-auto">
+                                <div className="divide-y divide-slate-100 max-h-[400px] overflow-y-auto">
                                     {sortedExpenses.map(ex => (
                                         <div key={ex.id} className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
-                                            <div className="flex-grow pr-4 text-left">
-                                                {isAdmin ? <input type="text" value={ex.desc} onChange={e => updateExp(ex.id, 'desc', e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 font-medium" /> : <p className="text-sm font-medium text-gray-600 truncate">{ex.desc}</p>}
+                                            <div className="flex-grow pr-4 text-xs font-medium text-slate-600">
+                                                {isAdmin ? <input type="text" value={ex.desc} onChange={e => updateExp(ex.id, 'desc', e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-xs" /> : ex.desc}
                                             </div>
                                             <div className="flex items-center space-x-3">
-                                                {isAdmin ? <input type="number" value={ex.valor || ''} onChange={e => updateExp(ex.id, 'valor', Number(e.target.value))} className="w-24 text-right font-black text-red-600 bg-gray-100 rounded-xl p-1.5 outline-none font-bold" /> : <span className="text-sm font-black text-red-500 whitespace-nowrap">{fmt(ex.valor)}</span>}
+                                                {isAdmin ? <input type="number" value={ex.valor || ''} onChange={e => updateExp(ex.id, 'valor', Number(e.target.value))} className="w-20 text-right font-black text-red-500 bg-slate-100 rounded-xl p-1.5 outline-none text-xs font-bold" /> : <span className="text-sm font-black text-red-500 whitespace-nowrap">{fmt(ex.valor)}</span>}
                                                 {isAdmin && <button onClick={() => delExp(ex.id)} className="text-red-200 hover:text-red-400">×</button>}
                                             </div>
                                         </div>
@@ -368,20 +349,29 @@
                                 </div>
                             </div>
 
-                            <div className="bg-emerald-900 rounded-[2rem] p-8 text-white shadow-2xl flex flex-col justify-between h-full relative overflow-hidden">
+                            <div className="bg-emerald-900 rounded-[2rem] p-8 text-white shadow-2xl flex flex-col justify-center text-center relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-8 opacity-10"><svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-                                <h3 className="font-black text-emerald-400 uppercase text-[10px] tracking-[.3em] mb-8 flex items-center tracking-widest">Estatísticas Clube</h3>
-                                <div className="space-y-6">
-                                    <div className="flex justify-between items-end border-b border-emerald-800 pb-3">
-                                        <span className="text-emerald-500 text-xs font-bold uppercase tracking-widest">Membros</span>
-                                        <span className="text-4xl font-black italic tracking-tighter">{stats.count}</span>
-                                    </div>
-                                    <div className="flex justify-between items-end border-b border-emerald-800 pb-3">
-                                        <span className="text-emerald-500 text-xs font-bold uppercase tracking-widest">Média p/M</span>
-                                        <span className="text-3xl font-black italic tracking-tighter">{fmt(stats.count > 0 ? stats.in / stats.count : 0)}</span>
+                                <div>
+                                    <h3 className="font-black text-emerald-400 uppercase text-[10px] tracking-[.3em] mb-8 flex items-center tracking-widest">
+                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                                        Estatísticas Clube
+                                    </h3>
+                                    <div className="space-y-5 text-left">
+                                        <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
+                                            <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest text-left">Membros Ativos</span>
+                                            <span className="text-3xl font-black italic tracking-tighter">{stats.count}</span>
+                                        </div>
+                                        <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
+                                            <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest text-left">Colaboradores</span>
+                                            <span className="text-3xl font-black italic tracking-tighter">{stats.colabs}</span>
+                                        </div>
+                                        <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
+                                            <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest text-left">Maior Gasto Único</span>
+                                            <span className="text-2xl font-black italic tracking-tighter text-red-300">{fmt(stats.maiorEx)}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="mt-12 text-[9px] font-black uppercase tracking-[.4em] text-center text-emerald-600 italic">Gestão Financeira CFC 2026</div>
+                                <div className="mt-10 text-[9px] font-black uppercase tracking-[.4em] text-center text-emerald-600 italic">Gestão Financeira CFC 2026</div>
                             </div>
                         </div>
                     </main>
@@ -393,25 +383,26 @@
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                 <span className="font-black uppercase tracking-[.3em] text-sm italic underline decoration-emerald-200 decoration-4">Portal da Transparência CFC</span>
                             </div>
-                            <p className="text-gray-500 text-sm max-w-2xl mx-auto leading-relaxed font-medium italic">
+                            <p className="text-slate-500 text-xs max-w-2xl mx-auto leading-relaxed font-medium">
                                 Este painel foi desenvolvido para garantir clareza, honestidade e organização absoluta. 
                                 Todos os registros são sincronizados em tempo real, permitindo que cada membro 
                                 acompanhe a saúde financeira do clube de forma aberta e transparente.
                             </p>
+                            <div className="pt-6 border-t border-slate-100 max-w-xs mx-auto text-slate-300 font-black text-[10px] uppercase tracking-[.4em]">União • Respeito • Futebol</div>
                         </div>
                     </footer>
 
-                    {/* Modal Login */}
+                    {/* Modal de Login */}
                     {showModal && (
                         <div className="fixed inset-0 bg-emerald-950/95 backdrop-blur-xl flex items-center justify-center z-[100] p-4 text-center">
                             <div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-sm overflow-hidden p-8 md:p-12 relative animate-in zoom-in-95">
                                 <h2 className="text-2xl font-black text-emerald-900 mb-2 italic uppercase">Acesso Admin</h2>
                                 <form onSubmit={handleLogin} className="space-y-6">
-                                    <input type="password" value={pass} onChange={e => setPass(e.target.value)} placeholder="CHAVE" className="w-full p-5 bg-gray-100 border-none rounded-3xl text-center font-black text-2xl outline-none focus:ring-4 focus:ring-emerald-500/20" autoFocus />
-                                    {err && <p className="text-red-500 text-[10px] font-black uppercase">⚠️ {err}</p>}
+                                    <input type="password" value={pass} onChange={e => setPass(e.target.value)} placeholder="CHAVE" className="w-full p-5 bg-slate-100 border-none rounded-3xl text-center font-black text-2xl outline-none focus:ring-4 focus:ring-emerald-500/20" autoFocus />
+                                    {err && <p className="text-red-500 text-[10px] font-black uppercase animate-bounce">⚠️ {err}</p>}
                                     <div className="flex flex-col space-y-4 pt-2">
                                         <button type="submit" className="w-full p-5 bg-emerald-600 rounded-3xl font-black text-white uppercase text-xs tracking-widest shadow-xl active:scale-95 transition-all">Entrar</button>
-                                        <button type="button" onClick={() => { setShowModal(false); setErr(""); }} className="w-full p-4 font-bold text-gray-300 uppercase text-[10px] tracking-widest">Fechar</button>
+                                        <button type="button" onClick={() => { setShowModal(false); setErr(""); }} className="w-full p-4 font-bold text-slate-300 uppercase text-[10px] tracking-widest">Fechar</button>
                                     </div>
                                 </form>
                             </div>
