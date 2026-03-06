@@ -249,7 +249,7 @@
                         {/* Cards Resumo Carousel */}
                         <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-3 pb-2 snap-x-container no-scrollbar">
                             <div className="min-w-[85%] md:min-w-0 bg-white p-5 rounded-[2rem] shadow-sm border border-slate-200 snap-card">
-                                <p className="text-[10px] text-slate-400 font-black uppercase mb-1 tracking-widest text-center md:text-left">Saldo Atual</p>
+                                <p className="text-[10px] text-slate-400 font-black uppercase mb-1 tracking-widest text-center md:text-left">Valor em Caixa</p>
                                 <p className={`text-3xl font-black tracking-tighter text-center md:text-left ${stats.in - stats.out >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>{fmt(stats.in - stats.out)}</p>
                             </div>
                             <div className="min-w-[85%] md:min-w-0 bg-white p-5 rounded-[2rem] shadow-sm border border-slate-200 snap-card">
