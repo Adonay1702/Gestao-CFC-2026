@@ -20,6 +20,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
+    <!-- jsPDF para gerar o Relatório PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
     <style>
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -233,7 +237,6 @@
                 return { in: tin, out: tout, count, colabs, maiorEx };
             }, [members, expenses]);
 
-            // Lógica de ordenação atualizada: Colaboradores no final
             const sortedMembers = useMemo(() => {
                 return [...members].sort((a, b) => {
                     const nameA = a.nome || "";
@@ -242,12 +245,9 @@
                     const isColabA = nameA.startsWith('*') && nameA.endsWith('*');
                     const isColabB = nameB.startsWith('*') && nameB.endsWith('*');
 
-                    // Se A for colab e B não for, A vai para baixo
                     if (isColabA && !isColabB) return 1;
-                    // Se B for colab e A não for, B vai para baixo (A fica em cima)
                     if (!isColabA && isColabB) return -1;
 
-                    // Limpa os asteriscos apenas para a comparação alfabética ficar correta
                     const cleanA = isColabA ? nameA.substring(1, nameA.length - 1) : nameA;
                     const cleanB = isColabB ? nameB.substring(1, nameB.length - 1) : nameB;
                     
@@ -257,6 +257,78 @@
 
             const sortedExpenses = useMemo(() => [...expenses].sort((a, b) => b.id - a.id), [expenses]);
             const fmt = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+
+            // FUNÇÃO PARA GERAR O PDF
+            const generatePDF = () => {
+                const { jsPDF } = window.jspdf;
+                // Orientação paisagem (landscape) para caberem todos os meses
+                const doc = new jsPDF('landscape'); 
+
+                // Título do Relatório
+                doc.setFontSize(18);
+                doc.setTextColor(16, 185, 129); // Verde Esmeralda
+                doc.text("Relatório Financeiro Detalhado - CFC 2026", 14, 22);
+                
+                // Data da Emissão
+                doc.setFontSize(10);
+                doc.setTextColor(100);
+                doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 14, 28);
+
+                // Resumo do Clube
+                doc.setFontSize(12);
+                doc.setTextColor(30);
+                doc.text(`Valor em Caixa: ${fmt(stats.in - stats.out)}`, 14, 40);
+                doc.text(`Total Arrecadado: ${fmt(stats.in)}`, 80, 40);
+                doc.text(`Total de Saídas: ${fmt(stats.out)}`, 150, 40);
+
+                // TABELA DE ENTRADAS (MENSALIDADES)
+                doc.setFontSize(14);
+                doc.setTextColor(16, 185, 129);
+                doc.text("Detalhamento de Entradas (Mensalidades)", 14, 55);
+                
+                const entradasHead = [['Membro', 'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ', 'TOTAL']];
+                const entradasBody = sortedMembers.map(m => {
+                    const row = [m.nome.replace(/\*/g, '')]; // Remove os asteriscos na impressão
+                    months.forEach(mon => {
+                        const val = Number(m[mon]) || 0;
+                        row.push(val > 0 ? `R$ ${val}` : '-');
+                    });
+                    row.push(fmt(getRowTotal(m)));
+                    return row;
+                });
+
+                doc.autoTable({
+                    startY: 60,
+                    head: entradasHead,
+                    body: entradasBody,
+                    theme: 'striped',
+                    headStyles: { fillColor: [16, 185, 129] },
+                    styles: { fontSize: 8, cellPadding: 2 },
+                });
+
+                // TABELA DE SAÍDAS (GASTOS)
+                const finalY = doc.lastAutoTable.finalY || 60;
+                doc.setFontSize(14);
+                doc.setTextColor(239, 68, 68); // Vermelho
+                doc.text("Detalhamento de Saídas (Gastos)", 14, finalY + 15);
+                
+                const saidasBody = sortedExpenses.map(ex => [
+                    ex.desc,
+                    fmt(ex.valor)
+                ]);
+
+                doc.autoTable({
+                    startY: finalY + 20,
+                    head: [['Descrição da Saída / Gasto', 'Valor Retirado']],
+                    body: saidasBody,
+                    theme: 'striped',
+                    headStyles: { fillColor: [239, 68, 68] },
+                    styles: { fontSize: 10 }
+                });
+
+                // Comando para salvar o arquivo
+                doc.save('Relatorio_Financeiro_CFC_2026.pdf');
+            };
 
             const handleLogin = (e) => {
                 e.preventDefault();
@@ -317,206 +389,4 @@
                         <div className="md:hidden flex justify-center space-x-1 -mt-2 mb-2">
                              <div className="w-1 h-1 bg-emerald-600 rounded-full"></div>
                              <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
-                             <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
-                        </div>
-
-                        {/* BANNER PIX */}
-                        <div className="bg-emerald-50 border-2 border-emerald-200 rounded-[2rem] p-4 flex flex-col xl:flex-row items-center justify-between shadow-sm gap-4">
-                            <div className="flex items-center space-x-3 w-full xl:w-auto justify-center xl:justify-start">
-                                <div className="bg-white p-2 rounded-full text-emerald-500 shadow-sm border border-emerald-100">
-                                    <IconPix className="w-7 h-7" />
-                                </div>
-                                <div className="text-center xl:text-left">
-                                    <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Pagamentos</p>
-                                    <p className="text-sm font-bold text-slate-800">Selecione o valor do seu PIX</p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-2 w-full xl:w-auto">
-                                <button 
-                                    onClick={() => handleCopyPix(30)}
-                                    className={`w-full sm:w-auto px-4 py-2.5 rounded-2xl font-black text-[11px] sm:text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center justify-center space-x-1.5 ${pixCopied === 30 ? 'bg-emerald-600 text-white' : 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-100'}`}
-                                >
-                                    {pixCopied === 30 ? (
-                                        <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg><span>Copiado!</span></>
-                                    ) : (
-                                        <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg><span>Copiar R$ 30</span></>
-                                    )}
-                                </button>
-                                <button 
-                                    onClick={() => handleCopyPix(50)}
-                                    className={`w-full sm:w-auto px-4 py-2.5 rounded-2xl font-black text-[11px] sm:text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center justify-center space-x-1.5 ${pixCopied === 50 ? 'bg-emerald-600 text-white' : 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-100'}`}
-                                >
-                                    {pixCopied === 50 ? (
-                                        <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg><span>Copiado!</span></>
-                                    ) : (
-                                        <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg><span>Copiar R$ 50</span></>
-                                    )}
-                                </button>
-                                <button 
-                                    onClick={() => handleCopyPix('outros')}
-                                    className={`w-full sm:w-auto px-4 py-2.5 rounded-2xl font-black text-[11px] sm:text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center justify-center space-x-1.5 ${pixCopied === 'outros' ? 'bg-emerald-600 text-white' : 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-100'}`}
-                                >
-                                    {pixCopied === 'outros' ? (
-                                        <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg><span>Copiado!</span></>
-                                    ) : (
-                                        <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg><span>Outros Valores</span></>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Tabela de Mensalidades */}
-                        <div className="bg-white rounded-[2rem] shadow-2xl border border-slate-200 overflow-hidden mt-4">
-                            <div className="p-4 bg-slate-50 border-b flex justify-between items-center">
-                                <h2 className="font-black text-slate-800 uppercase text-[10px] tracking-widest">Controle de Mensalidades</h2>
-                                {isAdmin && <button onClick={addMember} className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-black shadow shadow-emerald-200 active:scale-95">+ MEMBRO</button>}
-                            </div>
-                            
-                            <div className="overflow-x-auto max-h-[65vh] relative scroll-smooth">
-                                <table className="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr className="text-[10px] text-slate-500 font-black uppercase bg-slate-100">
-                                            <th className="sticky-corner p-3 md:p-4 border-b border-r border-slate-200">MEMBRO</th>
-                                            {monthLabels.map(m => (
-                                                <th key={m} className="sticky-header p-3 md:p-4 text-center border-b border-r border-slate-200 min-w-[65px] font-bold">{m}</th>
-                                            ))}
-                                            <th className="sticky-header p-3 md:p-4 text-right border-b border-slate-200 font-black min-w-[100px] bg-slate-100">TOTAL</th>
-                                            {isAdmin && <th className="sticky-header p-3 border-b border-slate-200 w-[60px]"></th>}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-200">
-                                        {sortedMembers.map((m, idx) => {
-                                            const isColab = m.nome && m.nome.startsWith('*') && m.nome.endsWith('*');
-                                            const displayName = isColab ? m.nome.substring(1, m.nome.length - 1) : m.nome;
-                                            const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-slate-50';
-
-                                            return (
-                                                <tr key={m.id} className={`text-[12px] md:text-sm ${rowBg} hover:bg-emerald-50 transition-colors`}>
-                                                    <td className={`sticky-column p-3 md:p-4 font-bold ${rowBg}`}>
-                                                        {isAdmin ? <input type="text" value={m.nome} onChange={e => updateMember(m.id, 'nome', e.target.value.toUpperCase())} className="w-full bg-transparent border-none focus:ring-0 p-0 font-bold text-emerald-900 outline-none" /> : 
-                                                        <div className="flex flex-col">
-                                                            <span className={isColab ? "text-slate-400 font-normal italic" : "font-bold text-slate-900"}>{displayName || '---'}</span>
-                                                            {isColab && <span className="text-[7px] text-emerald-500 font-black uppercase tracking-tighter text-left">Colaborador</span>}
-                                                        </div>}
-                                                    </td>
-                                                    {months.map(mon => {
-                                                        const val = Number(m[mon]) || 0;
-                                                        const color = val === 50 ? 'bg-emerald-100 text-emerald-700' : val === 30 ? 'bg-yellow-100 text-yellow-700' : val > 0 ? 'bg-orange-100 text-orange-700' : 'text-slate-300';
-                                                        return (
-                                                            <td key={mon} className="p-2 text-center border-r border-slate-200">
-                                                                {isAdmin ? <input type="number" value={val === 0 ? '' : val} onChange={e => updateMember(m.id, mon, Number(e.target.value))} className={`w-full p-2 rounded-xl text-center font-black text-xs ${val > 0 ? color : 'bg-transparent'}`} placeholder="0" /> : 
-                                                                <span className={`inline-block px-2 py-1 rounded-lg font-black min-w-[32px] ${color}`}>{val > 0 ? val : '-'}</span>}
-                                                            </td>
-                                                        );
-                                                    })}
-                                                    <td className="p-3 md:p-4 text-right font-black text-slate-700 border-l border-slate-200">{fmt(getRowTotal(m)).replace('R$','')}</td>
-                                                    {isAdmin && <td className="p-2 text-center border-l border-slate-200"><button onClick={()=>delMember(m.id)} className="text-red-400 font-bold text-lg hover:text-red-600">×</button></td>}
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className="p-4 bg-emerald-50 text-[8px] font-black text-emerald-500 uppercase tracking-[.4em] text-center md:hidden border-t border-slate-200">Deslize lateral para ver os meses ⟷</div>
-                        </div>
-
-                        {/* Gastos Cronológicos e Stats */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-12 mt-4">
-                            <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full">
-                                <div className="p-5 bg-gray-50 border-b flex justify-between items-center">
-                                    <h2 className="font-black text-slate-800 uppercase text-xs tracking-widest">Saídas Detalhadas</h2>
-                                    {isAdmin && <button onClick={addExp} className="text-red-500 font-black text-[10px] uppercase tracking-widest">+ ADICIONAR</button>}
-                                </div>
-                                <div className="divide-y divide-slate-100 max-h-[400px] overflow-y-auto">
-                                    {sortedExpenses.map(ex => (
-                                        <div key={ex.id} className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
-                                            <div className="flex-grow pr-4 text-xs font-medium text-slate-600">
-                                                {isAdmin ? <input type="text" value={ex.desc} onChange={e => updateExp(ex.id, 'desc', e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-xs" /> : ex.desc}
-                                            </div>
-                                            <div className="flex items-center space-x-3">
-                                                {isAdmin ? <input type="number" value={ex.valor || ''} onChange={e => updateExp(ex.id, 'valor', Number(e.target.value))} className="w-20 text-right font-black text-red-500 bg-slate-100 rounded-xl p-1.5 outline-none text-xs font-bold" /> : <span className="text-sm font-black text-red-500 whitespace-nowrap">{fmt(ex.valor)}</span>}
-                                                {isAdmin && <button onClick={() => delExp(ex.id)} className="text-red-200 hover:text-red-400 font-bold text-lg">×</button>}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="bg-emerald-900 rounded-[2rem] p-8 text-white shadow-2xl flex flex-col justify-center text-center relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-8 opacity-10"><svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-                                <div>
-                                    <h3 className="font-black text-emerald-400 uppercase text-[10px] tracking-[.3em] mb-8 flex items-center tracking-widest">
-                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                                        Estatísticas Clube
-                                    </h3>
-                                    <div className="space-y-5 text-left">
-                                        <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
-                                            <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest text-left">Membros Ativos</span>
-                                            <span className="text-3xl font-black italic tracking-tighter">{stats.count}</span>
-                                        </div>
-                                        <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
-                                            <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest text-left">Colaboradores</span>
-                                            <span className="text-3xl font-black italic tracking-tighter">{stats.colabs}</span>
-                                        </div>
-                                        <div className="flex justify-between items-end border-b border-emerald-800 pb-2">
-                                            <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest text-left">Maior Gasto Único</span>
-                                            <span className="text-2xl font-black italic tracking-tighter text-red-300">{fmt(stats.maiorEx)}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="mt-10 text-[9px] font-black uppercase tracking-[.4em] text-center text-emerald-600 italic">Gestão Financeira CFC 2026</div>
-                            </div>
-                        </div>
-                    </main>
-
-                    {/* Rodapé de Transparência */}
-                    <footer className="bg-white border-t border-slate-200 py-12 px-4 mt-auto">
-                        <div className="max-w-7xl mx-auto text-center space-y-4">
-                            <div className="flex justify-center items-center space-x-2 text-emerald-700 mb-2">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                                <span className="font-black uppercase tracking-[.3em] text-sm italic underline decoration-emerald-200 decoration-4">Portal da Transparência CFC</span>
-                            </div>
-                            <p className="text-slate-500 text-xs max-w-2xl mx-auto leading-relaxed font-medium italic">
-                                Este painel foi desenvolvido para garantir clareza, honestidade e organização absoluta. 
-                                Todos os registros são sincronizados em tempo real, permitindo que cada membro acompanhe a saúde financeira do clube.
-                            </p>
-                            <div className="pt-6 border-t border-slate-100 max-w-xs mx-auto text-slate-300 font-black text-[10px] uppercase tracking-[.4em]">União • Respeito • Futebol</div>
-                        </div>
-                    </footer>
-
-                    {/* Modal de Login */}
-                    {showModal && (
-                        <div className="fixed inset-0 bg-emerald-950/95 backdrop-blur-xl flex items-center justify-center z-[100] p-4 text-center">
-                            <div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-sm overflow-hidden p-8 md:p-12 relative animate-in zoom-in-95">
-                                <h2 className="text-2xl font-black text-emerald-900 mb-2 italic uppercase">Acesso Admin</h2>
-                                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-10">Restrito à Tesouraria</p>
-                                <form onSubmit={handleLogin} className="space-y-6">
-                                    <input type="password" value={pass} onChange={e => setPass(e.target.value)} placeholder="CHAVE" className="w-full p-5 bg-slate-100 border-none rounded-3xl text-center font-black text-2xl outline-none focus:ring-4 focus:ring-emerald-500/20" autoFocus />
-                                    {err && <p className="text-red-500 text-[10px] font-black uppercase animate-bounce">⚠️ {err}</p>}
-                                    <div className="flex flex-col space-y-4 pt-2">
-                                        <button type="submit" className="w-full p-5 bg-emerald-600 rounded-3xl font-black text-white uppercase text-xs tracking-widest shadow-xl active:scale-95 transition-all">Entrar</button>
-                                        <button type="button" onClick={() => { setShowModal(false); setErr(""); }} className="w-full p-4 font-bold text-slate-300 uppercase text-[10px] tracking-widest">Fechar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        }
-
-        (function boot() {
-            try {
-                firebase.initializeApp(firebaseConfig);
-                const db = firebase.firestore();
-                const auth = firebase.auth();
-                ReactDOM.createRoot(document.getElementById('root')).render(<App fbAuth={auth} fbDb={db} />);
-            } catch(e) {
-                ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-            }
-        })();
-    </script>
-</body>
-</html>
-
-
+                             <div className="w-
